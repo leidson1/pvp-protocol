@@ -1,5 +1,7 @@
 # PVP — Protocolo de Versionamento Pedagógico
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18874305.svg)](https://doi.org/10.5281/zenodo.18874305)
+
 > *Não é correção. É nova versão.*
 
 O **PVP** é um protocolo aberto de melhoria contínua do planejamento pedagógico. Ele propõe que toda melhoria feita em um plano de aula seja tratada como nova versão de um artefato profissional — registrada de forma mínima, versionada semanticamente e acumulável ao longo da carreira.
@@ -133,7 +135,7 @@ Cada camada funciona sozinha. A camada 1 é suficiente.
 - [x] FAQ e documentação de defesa
 - [ ] Registro Biblioteca Nacional (EDA)
 - [ ] Registro OSF + timestamp
-- [ ] Integração Zenodo → DOI
+- [x] Integração Zenodo → DOI
 - [ ] Revisão de escopo (JBI)
 - [ ] Piloto UFT
 - [ ] Publicação do artigo
@@ -145,6 +147,7 @@ Cada camada funciona sozinha. A camada 1 é suficiente.
   author       = {Santos, Leidison Lima dos},
   title        = {{PVP} — Protocolo de Versionamento Pedagógico (Core 1.0)},
   year         = {2026},
+  doi          = {10.5281/zenodo.18874305},
   howpublished = {\url{https://github.com/leidson1/pvp-protocol}},
   note         = {Licença CC BY 4.0}
 }
