@@ -133,7 +133,7 @@ Cada camada funciona sozinha. A camada 1 é suficiente.
 - [x] Canvas desenvolvido (3 versões)
 - [x] Fundamentação teórica consolidada
 - [x] FAQ e documentação de defesa
-- [ ] Registro Biblioteca Nacional (EDA)
+- [x] Registro Biblioteca Nacional (EDA)
 - [ ] Registro OSF + timestamp
 - [x] Integração Zenodo → DOI
 - [ ] Revisão de escopo (JBI)
