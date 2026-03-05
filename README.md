@@ -134,7 +134,7 @@ Cada camada funciona sozinha. A camada 1 é suficiente.
 - [x] Fundamentação teórica consolidada
 - [x] FAQ e documentação de defesa
 - [x] Registro Biblioteca Nacional (EDA)
-- [ ] Registro OSF + timestamp
+- [x] Registro OSF + timestamp
 - [x] Integração Zenodo → DOI
 - [ ] Revisão de escopo (JBI)
 - [ ] Piloto UFT
