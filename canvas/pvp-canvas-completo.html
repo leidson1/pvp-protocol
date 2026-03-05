@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>PVP Canvas — Instrumento de Versionamento Pedagógico</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    gap: 30px;
+  }
+
+  .page {
+    width: 297mm;
+    height: 210mm;
+    background: #fff;
+    padding: 10mm 12mm;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ======================== PAGE 1: CANVAS ======================== */
+
+  .canvas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 6px;
+    padding-bottom: 5px;
+    border-bottom: 2.5px solid #111;
+  }
+
+  .canvas-header .ch-left {}
+
+  .canvas-header .ch-title {
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    color: #111;
+  }
+
+  .canvas-header .ch-sub {
+    font-size: 8px;
+    color: #888;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .canvas-header .ch-right {
+    text-align: right;
+  }
+
+  .canvas-header .ch-meta {
+    font-size: 8px;
+    color: #555;
+    line-height: 1.6;
+  }
+
+  .canvas-header .ch-meta-line {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+
+  .meta-label {
+    font-weight: 700;
+    color: #333;
+    min-width: 50px;
+    text-align: right;
+  }
+
+  .meta-field {
+    border-bottom: 1px solid #ccc;
+    min-width: 120px;
+    height: 14px;
+    display: inline-block;
+  }
+
+  /* Main 3-column grid */
+  .canvas-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    height: calc(100% - 110px);
+  }
+
+  .canvas-col {
+    border: 2px solid;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .col-header {
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .col-header .col-icon { font-size: 14px; }
+
+  .col-header .col-title {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .col-header .col-phase {
+    font-size: 7px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-left: auto;
+    opacity: 0.7;
+  }
+
+  .col-content {
+    flex: 1;
+    padding: 6px 8px;
+  }
+
+  .field-group {
+    margin-bottom: 5px;
+  }
+
+  .field-label {
+    font-size: 7.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .field-area {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 22px;
+    background: #fcfcfc;
+  }
+
+  .field-area.tall { min-height: 30px; }
+  .field-area.xtall { min-height: 42px; }
+
+  .field-hint {
+    font-size: 6.5px;
+    color: #aaa;
+    font-style: italic;
+    margin-top: 1px;
+  }
+
+  /* Column colors */
+  .col-before { border-color: #1565c0; }
+  .col-before .col-header { background: #1565c0; color: #fff; }
+  .col-before .field-label { color: #1565c0; }
+
+  .col-during { border-color: #e65100; }
+  .col-during .col-header { background: #e65100; color: #fff; }
+  .col-during .field-label { color: #e65100; }
+
+  .col-after { border-color: #2e7d32; }
+  .col-after .col-header { background: #2e7d32; color: #fff; }
+  .col-after .field-label { color: #2e7d32; }
+
+  /* Rating scale */
+  .rating-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+  }
+
+  .rating-circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1.5px solid #e65100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    font-weight: 700;
+    color: #e65100;
+  }
+
+  .rating-label-left, .rating-label-right {
+    font-size: 6px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  /* Checkbox row */
+  .check-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 2px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 7.5px;
+    color: #444;
+  }
+
+  .check-box {
+    width: 10px;
+    height: 10px;
+    border: 1.5px solid #2e7d32;
+    border-radius: 2px;
+  }
+
+  /* Version update box */
+  .version-box {
+    background: #f0f7f0;
+    border: 1.5px solid #2e7d32;
+    border-radius: 6px;
+    padding: 5px 8px;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .version-box .vb-label {
+    font-size: 7px;
+    font-weight: 800;
+    color: #2e7d32;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .version-box .vb-arrow {
+    font-size: 12px;
+    color: #999;
+  }
+
+  .version-box .vb-field {
+    border-bottom: 1.5px solid #2e7d32;
+    min-width: 40px;
+    height: 16px;
+    text-align: center;
+  }
+
+  /* Evidence level row */
+  .evidence-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-top: 3px;
+  }
+
+  .ev-chip {
+    font-size: 7px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1.5px solid #2e7d32;
+    color: #2e7d32;
+  }
+
+  .ev-chip.active {
+    background: #2e7d32;
+    color: #fff;
+  }
+
+  /* Bottom history table */
+  .history-section {
+    margin-top: 5px;
+  }
+
+  .history-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 3px;
+  }
+
+  .history-header .hh-title {
+    font-size: 8px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #333;
+  }
+
+  .history-header .hh-line {
+    flex: 1;
+    height: 1px;
+    background: #ccc;
+  }
+
+  .history-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .history-table th {
+    font-size: 6.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    background: #333;
+    padding: 3px 6px;
+    text-align: left;
+  }
+
+  .history-table td {
+    font-size: 7px;
+    padding: 4px 6px;
+    border-bottom: 1px solid #eee;
+    color: #666;
+    height: 16px;
+  }
+
+  .history-table tr:nth-child(even) td {
+    background: #fafafa;
+  }
+
+  /* Footer */
+  .canvas-footer {
+    position: absolute;
+    bottom: 8px;
+    left: 12mm;
+    right: 12mm;
+    display: flex;
+    justify-content: space-between;
+    font-size: 6px;
+    color: #ccc;
+  }
+
+  /* ======================== PAGE 2: QUICK GUIDE ======================== */
+
+  .guide-header {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2.5px solid #111;
+    margin-bottom: 8px;
+  }
+
+  .guide-header .gh-title {
+    font-size: 16px;
+    font-weight: 900;
+    color: #111;
+  }
+
+  .guide-header .gh-sub {
+    font-size: 8px;
+    color: #888;
+    margin-bottom: 2px;
+  }
+
+  .guide-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    height: calc(100% - 50px);
+  }
+
+  .guide-left, .guide-right {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .guide-section {
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+
+  .gs-title {
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #111;
+    margin-bottom: 5px;
+    padding-bottom: 3px;
+    border-bottom: 1.5px solid #eee;
+  }
+
+  .gs-content {
+    font-size: 8.5px;
+    line-height: 1.6;
+    color: #444;
+  }
+
+  .step-list {
+    list-style: none;
+    counter-reset: steps;
+  }
+
+  .step-list li {
+    counter-increment: steps;
+    padding-left: 22px;
+    position: relative;
+    margin-bottom: 4px;
+    font-size: 8.5px;
+    line-height: 1.5;
+    color: #333;
+  }
+
+  .step-list li::before {
+    content: counter(steps);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #111;
+    color: #fff;
+    font-size: 8px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Version visual */
+  .version-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px;
+    background: #f8f8f8;
+    border-radius: 6px;
+    margin: 6px 0;
+  }
+
+  .vv-num {
+    font-size: 28px;
+    font-weight: 900;
+  }
+
+  .vv-dot { color: #bbb; }
+  .vv-x { color: #c62828; }
+  .vv-y { color: #e65100; }
+  .vv-z { color: #1565c0; }
+
+  .vv-labels {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 4px;
+  }
+
+  .vv-label {
+    font-size: 7px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .vvl-x { background: #ffebee; color: #c62828; }
+  .vvl-y { background: #fff3e0; color: #e65100; }
+  .vvl-z { background: #e3f2fd; color: #1565c0; }
+
+  /* Example filled */
+  .example-filled {
+    background: #f8f8f8;
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+
+  .ef-header {
+    font-size: 8px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #888;
+    margin-bottom: 4px;
+  }
+
+  .ef-title {
+    font-size: 9px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 6px;
+  }
+
+  .ef-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+  }
+
+  .ef-cell {
+    padding: 5px 6px;
+    border-radius: 4px;
+    font-size: 7.5px;
+    line-height: 1.4;
+  }
+
+  .ef-cell.before { background: #e3f2fd; border: 1px solid #90caf9; }
+  .ef-cell.during { background: #fff3e0; border: 1px solid #ffcc80; }
+  .ef-cell.after { background: #e8f5e9; border: 1px solid #a5d6a7; }
+
+  .ef-cell .efc-label {
+    font-size: 6.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+
+  .ef-cell.before .efc-label { color: #1565c0; }
+  .ef-cell.during .efc-label { color: #e65100; }
+  .ef-cell.after .efc-label { color: #2e7d32; }
+
+  .ef-cell .efc-text {
+    color: #444;
+    font-style: italic;
+  }
+
+  .ef-version-result {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 6px;
+    padding: 4px 0;
+  }
+
+  .ef-v {
+    font-size: 11px;
+    font-weight: 900;
+    color: #111;
+  }
+
+  .ef-arrow { font-size: 14px; color: #999; }
+
+  .ef-badge {
+    font-size: 7px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+  }
+
+  /* Rules mini */
+  .rules-mini {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+  }
+
+  .rule-mini-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    font-size: 7.5px;
+    line-height: 1.4;
+    color: #444;
+  }
+
+  .rule-mini-num {
+    font-weight: 900;
+    color: #111;
+    font-size: 8px;
+    min-width: 10px;
+  }
+
+  /* Evidence mini */
+  .evidence-mini {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .ev-mini-card {
+    flex: 1;
+    text-align: center;
+    padding: 4px 6px;
+    border-radius: 4px;
+    border: 1.5px solid #ddd;
+  }
+
+  .ev-mini-card .evm-level {
+    font-size: 12px;
+    font-weight: 900;
+    color: #111;
+  }
+
+  .ev-mini-card .evm-name {
+    font-size: 6.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: #555;
+    margin-top: 1px;
+  }
+
+  .ev-mini-card .evm-desc {
+    font-size: 6px;
+    color: #999;
+    margin-top: 1px;
+  }
+
+  .evm-0 { background: #fafafa; }
+  .evm-1 { background: #fff8f0; border-color: #ffcc80; }
+  .evm-2 { background: #f0f4ff; border-color: #90caf9; }
+  .evm-3 { background: #f0f7f0; border-color: #a5d6a7; }
+
+  @media print {
+    body { padding: 0; gap: 0; background: #fff; }
+    .page {
+      box-shadow: none;
+      page-break-after: always;
+    }
+    .page:last-child { page-break-after: auto; }
+    @page { size: A4 landscape; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ======================== PAGE 1: THE CANVAS ======================== -->
+<div class="page">
+
+  <div class="canvas-header">
+    <div class="ch-left">
+      <div class="ch-title">PVP Canvas</div>
+      <div class="ch-sub">Protocolo de Versionamento Pedagógico · Instrumento de Registro</div>
+    </div>
+    <div class="ch-right">
+      <div class="ch-meta">
+        <div class="ch-meta-line"><span class="meta-label">Disciplina:</span> <span class="meta-field"></span></div>
+        <div class="ch-meta-line"><span class="meta-label">Tema:</span> <span class="meta-field"></span></div>
+        <div class="ch-meta-line"><span class="meta-label">Turma:</span> <span class="meta-field" style="min-width:60px;"></span> <span class="meta-label">Data:</span> <span class="meta-field" style="min-width:60px;"></span> <span class="meta-label">Versão:</span> <span class="meta-field" style="min-width:40px;"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 Columns -->
+  <div class="canvas-body">
+
+    <!-- COLUMN 1: ANTES DA AULA -->
+    <div class="canvas-col col-before">
+      <div class="col-header">
+        <span class="col-icon">📋</span>
+        <span class="col-title">Antes da aula</span>
+        <span class="col-phase">Planejamento</span>
+      </div>
+      <div class="col-content">
+        <div class="field-group">
+          <div class="field-label">🎯 Objetivo da aula</div>
+          <div class="field-area tall"></div>
+          <div class="field-hint">O que o aluno deve ser capaz de fazer ao final</div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">📐 Atividades planejadas</div>
+          <div class="field-area xtall"></div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">🧰 Materiais e recursos</div>
+          <div class="field-area"></div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">⏱ Tempo previsto</div>
+          <div class="field-area"></div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">📎 Contexto (BNCC / descritor)</div>
+          <div class="field-area"></div>
+          <div class="field-hint">Habilidade BNCC, descritor SAEB, ou referência curricular</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 2: DEPOIS DA AULA -->
+    <div class="canvas-col col-during">
+      <div class="col-header">
+        <span class="col-icon">🔍</span>
+        <span class="col-title">Depois da aula</span>
+        <span class="col-phase">Observação</span>
+      </div>
+      <div class="col-content">
+        <div class="field-group">
+          <div class="field-label">✅ O que funcionou</div>
+          <div class="field-area tall"></div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">⚠️ O que não funcionou</div>
+          <div class="field-area tall"></div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">🔄 Adaptações feitas na hora</div>
+          <div class="field-area tall"></div>
+          <div class="field-hint">Mudanças improvisadas durante a aula</div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">📊 Sinal de sala observado</div>
+          <div class="field-area tall"></div>
+          <div class="field-hint">Erro recorrente, dificuldade identificada, engajamento, checagem</div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Autoavaliação da aplicação</div>
+          <div class="rating-row">
+            <span class="rating-label-left">Precisa<br>repensar</span>
+            <span class="rating-circle">1</span>
+            <span class="rating-circle">2</span>
+            <span class="rating-circle">3</span>
+            <span class="rating-circle">4</span>
+            <span class="rating-circle">5</span>
+            <span class="rating-label-right">Muito<br>bem</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 3: PRÓXIMA VERSÃO -->
+    <div class="canvas-col col-after">
+      <div class="col-header">
+        <span class="col-icon">🚀</span>
+        <span class="col-title">Próxima versão</span>
+        <span class="col-phase">Evolução</span>
+      </div>
+      <div class="col-content">
+        <div class="field-group">
+          <div class="field-label">🔧 O que vai mudar</div>
+          <div class="field-area xtall"></div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">❓ Por que vai mudar</div>
+          <div class="field-area tall"></div>
+          <div class="field-hint">Conectar com o sinal de sala observado</div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Tipo de mudança</div>
+          <div class="check-row">
+            <div class="check-item"><div class="check-box"></div> Reestruturação (X)</div>
+            <div class="check-item"><div class="check-box"></div> Ajuste (Y)</div>
+            <div class="check-item"><div class="check-box"></div> Micro-correção (Z)</div>
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="version-box">
+            <span class="vb-label">Versão atual:</span>
+            <span class="vb-field"></span>
+            <span class="vb-arrow">→</span>
+            <span class="vb-label">Nova versão:</span>
+            <span class="vb-field"></span>
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Nível de evidência</div>
+          <div class="evidence-row">
+            <span class="ev-chip">E0</span>
+            <span class="ev-chip">E1</span>
+            <span class="ev-chip">E2</span>
+            <span class="ev-chip">E3</span>
+          </div>
+          <div class="field-hint">Circular o nível atual do plano</div>
+        </div>
+        <div class="field-group" style="margin-top: 4px;">
+          <div class="field-label">Contexto diferente? → Criar VC</div>
+          <div class="check-row">
+            <div class="check-item"><div class="check-box"></div> Mesmo contexto</div>
+            <div class="check-item"><div class="check-box"></div> VC: <span style="border-bottom: 1px solid #2e7d32; min-width: 50px; display: inline-block;">&nbsp;</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- HISTORY TABLE -->
+  <div class="history-section">
+    <div class="history-header">
+      <span class="hh-title">Histórico de versões</span>
+      <span class="hh-line"></span>
+    </div>
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th style="width:8%;">Versão</th>
+          <th style="width:10%;">Data</th>
+          <th style="width:30%;">O que mudou</th>
+          <th style="width:30%;">Por que mudou (sinal de sala)</th>
+          <th style="width:12%;">Evidência</th>
+          <th style="width:10%;">Resultado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="canvas-footer">
+    <span>PVP Canvas v1.0 · Protocolo de Versionamento Pedagógico</span>
+    <span>Leidison Lima dos Santos · CC BY 4.0 · 2026</span>
+  </div>
+</div>
+
+<!-- ======================== PAGE 2: QUICK GUIDE ======================== -->
+<div class="page">
+
+  <div class="guide-header">
+    <div>
+      <div class="gh-title">PVP Canvas — Guia Rápido</div>
+    </div>
+    <div class="gh-sub">Como preencher o instrumento em 4 passos simples</div>
+  </div>
+
+  <div class="guide-body">
+
+    <!-- LEFT COLUMN -->
+    <div class="guide-left">
+
+      <div class="guide-section">
+        <div class="gs-title">O que é o PVP Canvas?</div>
+        <div class="gs-content">
+          O PVP Canvas é o instrumento de uma página do Protocolo de Versionamento Pedagógico. Ele guia o professor pelo ciclo de melhoria: planejar, aplicar, observar, registrar e evoluir. Pode ser impresso e preenchido à mão ou usado digitalmente. Leva aproximadamente 2 minutos para preencher após a aula.
+        </div>
+      </div>
+
+      <div class="guide-section">
+        <div class="gs-title">Como preencher</div>
+        <ol class="step-list">
+          <li><strong>Antes da aula:</strong> preencha a coluna azul com o que você planejou — objetivo, atividades, materiais, tempo e referência curricular. Se é primeira vez, a versão é v1.0.0.</li>
+          <li><strong>Depois da aula:</strong> preencha a coluna laranja — o que funcionou, o que não funcionou, o que você improvisou, e o sinal de sala mais importante que observou.</li>
+          <li><strong>Próxima versão:</strong> preencha a coluna verde — o que vai mudar, por quê (ligando ao sinal de sala), e qual o tipo de mudança. Marque o checkbox e atualize o número da versão.</li>
+          <li><strong>Histórico:</strong> registre uma linha na tabela do rodapé. Com o tempo, essa tabela conta a história completa do seu plano.</li>
+        </ol>
+      </div>
+
+      <div class="guide-section">
+        <div class="gs-title">Como funciona o versionamento</div>
+        <div class="version-visual">
+          <span class="vv-num vv-x">2</span>
+          <span class="vv-num vv-dot">.</span>
+          <span class="vv-num vv-y">3</span>
+          <span class="vv-num vv-dot">.</span>
+          <span class="vv-num vv-z">1</span>
+        </div>
+        <div class="vv-labels">
+          <span class="vv-label vvl-x">X — Reestruturação</span>
+          <span class="vv-label vvl-y">Y — Ajuste</span>
+          <span class="vv-label vvl-z">Z — Micro-correção</span>
+        </div>
+        <div style="font-size: 7.5px; color: #555; line-height: 1.6; margin-top: 6px;">
+          <strong>X sobe</strong> quando você muda a abordagem inteira, troca a sequência ou redesenha a aula.<br>
+          <strong>Y sobe</strong> quando você ajusta dentro da mesma estrutura: troca atividade, muda exemplo, redistribui tempo.<br>
+          <strong>Z sobe</strong> quando corrige algo pequeno: link quebrado, instrução confusa, erro de enunciado.<br>
+          <em>Formato simplificado X.Y é aceito se preferir.</em>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="guide-right">
+
+      <div class="guide-section">
+        <div class="gs-title">Exemplo preenchido</div>
+        <div class="example-filled">
+          <div class="ef-header">Matemática · 9º ano · Equação do 2º grau</div>
+          <div class="ef-grid">
+            <div class="ef-cell before">
+              <div class="efc-label">Antes</div>
+              <div class="efc-text">Explicação + Bhaskara + Lista de exercícios com problemas contextualizados. 50 min.</div>
+            </div>
+            <div class="ef-cell during">
+              <div class="efc-label">Depois</div>
+              <div class="efc-text">70% dos alunos travaram na transição Bhaskara → problema contextualizado. Improvisei exemplo intermediário e 85% resolveram.</div>
+            </div>
+            <div class="ef-cell after">
+              <div class="efc-label">Próxima versão</div>
+              <div class="efc-text">Inserir exemplo-ponte entre Bhaskara mecânico e problema contextualizado. Ajuste (Y).</div>
+            </div>
+          </div>
+          <div class="ef-version-result">
+            <span class="ef-v">v1.2.0</span>
+            <span class="ef-arrow">→</span>
+            <span class="ef-v">v1.3.0</span>
+            <span class="ef-badge">E2 — Aplicado 2+ vezes</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="guide-section">
+        <div class="gs-title">As 5 regras do PVP</div>
+        <div class="rules-mini">
+          <div class="rule-mini-item"><span class="rule-mini-num">1.</span> <span>Versão explícita — todo plano tem número.</span></div>
+          <div class="rule-mini-item"><span class="rule-mini-num">2.</span> <span>Mudança registrada — o que, por que, sinal de sala.</span></div>
+          <div class="rule-mini-item"><span class="rule-mini-num">3.</span> <span>Contexto declarado — série, tempo, recursos, turma.</span></div>
+          <div class="rule-mini-item"><span class="rule-mini-num">4.</span> <span>Evidência mínima — pelo menos um sinal de sala.</span></div>
+        </div>
+        <div class="rule-mini-item" style="margin-top: 3px;"><span class="rule-mini-num" style="font-weight:900; color:#111; font-size:8px; min-width:10px;">5.</span> <span style="font-size: 7.5px; color: #444;">Proveniência preservada — histórico e autoria rastreáveis.</span></div>
+      </div>
+
+      <div class="guide-section">
+        <div class="gs-title">Níveis de evidência</div>
+        <div class="evidence-mini">
+          <div class="ev-mini-card evm-0">
+            <div class="evm-level">E0</div>
+            <div class="evm-name">Rascunho</div>
+            <div class="evm-desc">Nunca aplicado</div>
+          </div>
+          <div class="ev-mini-card evm-1">
+            <div class="evm-level">E1</div>
+            <div class="evm-name">Aplicado 1×</div>
+            <div class="evm-desc">Observação docente</div>
+          </div>
+          <div class="ev-mini-card evm-2">
+            <div class="evm-level">E2</div>
+            <div class="evm-name">Aplicado 2+×</div>
+            <div class="evm-desc">Com checagem</div>
+          </div>
+          <div class="ev-mini-card evm-3">
+            <div class="evm-level">E3</div>
+            <div class="evm-name">Multicontexto</div>
+            <div class="evm-desc">Com VC documentada</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="guide-section" style="background: #f8f8f8; border-color: #ccc;">
+        <div class="gs-title" style="font-size: 8px;">O que o número da versão conta sobre o plano</div>
+        <div style="font-size: 8px; line-height: 1.7; color: #555;">
+          <strong>v1.0.0</strong> — Plano inicial, nunca aplicado.<br>
+          <strong>v1.3.0</strong> — Mesmo design original, 3 ajustes baseados em sala.<br>
+          <strong>v2.1.0</strong> — Reestruturado uma vez, 1 ajuste depois.<br>
+          <strong>v3.2.1 — E3</strong> — Maduro: 3 reestruturações, testado em múltiplos contextos.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="canvas-footer">
+    <span>PVP Canvas v1.0 · Guia Rápido</span>
+    <span>Leidison Lima dos Santos · CC BY 4.0 · 2026</span>
+  </div>
+</div>
+
+</body>
+</html>

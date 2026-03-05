@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>PVP Canvas Mini — A5</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ccc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .page {
+    width: 210mm;
+    height: 148mm;
+    background: #fff;
+    padding: 5mm 7mm;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* HEADER */
+  .hdr {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px solid #000;
+    padding-bottom: 2px;
+    margin-bottom: 3px;
+  }
+  .hdr-title { font-size: 11px; font-weight: 900; color: #000; }
+  .hdr-meta {
+    display: flex;
+    gap: 6px;
+    font-size: 6.5px;
+    color: #333;
+  }
+  .hdr-meta .ml { font-weight: 700; }
+  .hdr-meta .mf {
+    border-bottom: 1px solid #999;
+    min-width: 55px;
+    display: inline-block;
+  }
+  .hdr-meta .mf.sm { min-width: 30px; }
+
+  /* 3 COLUMNS */
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 3px;
+    height: 80mm;
+  }
+
+  .col {
+    border: 1.5px solid #000;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ch {
+    background: #000;
+    color: #fff;
+    padding: 2px 5px;
+    font-size: 7px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .cb { flex: 1; padding: 2px 4px; }
+
+  .f { margin-bottom: 1.5px; }
+  .fl {
+    font-size: 5.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: #000;
+  }
+  .fb {
+    border: 1px solid #ccc;
+    min-height: 10px;
+  }
+  .fb.m { min-height: 14px; }
+  .fb.l { min-height: 18px; }
+
+  /* Rating compact */
+  .rat {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-top: 1px;
+  }
+  .rc {
+    width: 10px; height: 10px;
+    border: 1px solid #000;
+    border-radius: 50%;
+    font-size: 5.5px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .rl { font-size: 4px; color: #888; text-transform: uppercase; }
+
+  /* Checks */
+  .cks {
+    display: flex;
+    gap: 4px;
+    margin-top: 1px;
+  }
+  .ck {
+    display: flex; align-items: center; gap: 2px;
+    font-size: 5.5px; color: #333;
+  }
+  .bx {
+    width: 7px; height: 7px;
+    border: 1px solid #000;
+  }
+
+  /* Version row */
+  .vr {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid #000;
+    padding: 2px 4px;
+    margin-top: 1px;
+  }
+  .vr .vl { font-size: 5.5px; font-weight: 800; text-transform: uppercase; }
+  .vr .vf { border-bottom: 1px solid #000; min-width: 24px; height: 10px; text-align: center; }
+  .vr .va { font-size: 9px; color: #666; }
+
+  /* Evidence */
+  .evr {
+    display: flex; gap: 3px; margin-top: 1px;
+  }
+  .ec {
+    font-size: 5px; font-weight: 700;
+    padding: 1px 3px;
+    border: 1px solid #000;
+  }
+
+  /* HISTORY */
+  .hist { margin-top: 3px; }
+  .ht {
+    font-size: 5.5px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 1px solid #000;
+    margin-bottom: 1px;
+    padding-bottom: 1px;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    font-size: 4.5px; font-weight: 800;
+    text-transform: uppercase;
+    background: #000; color: #fff;
+    padding: 1px 3px; text-align: left;
+  }
+  td {
+    font-size: 5px; padding: 1.5px 3px;
+    border-bottom: 1px solid #eee;
+    height: 9px;
+  }
+
+  .foot {
+    position: absolute;
+    bottom: 2px; left: 7mm; right: 7mm;
+    display: flex; justify-content: space-between;
+    font-size: 4px; color: #ccc;
+  }
+
+  @page { size: 210mm 148mm; margin: 0; }
+  @media print {
+    body { padding: 0; background: #fff; }
+    .page { box-shadow: none; }
+  }
+  @media screen {
+    body { padding: 20px; background: #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="hdr">
+    <div class="hdr-title">PVP Canvas Mini</div>
+    <div class="hdr-meta">
+      <span class="ml">Disc.:</span><span class="mf"></span>
+      <span class="ml">Tema:</span><span class="mf"></span>
+      <span class="ml">Turma:</span><span class="mf sm"></span>
+      <span class="ml">Data:</span><span class="mf sm"></span>
+      <span class="ml">Versão:</span><span class="mf sm"></span>
+    </div>
+  </div>
+
+  <div class="cols">
+
+    <!-- COL 1 -->
+    <div class="col">
+      <div class="ch">Antes da aula</div>
+      <div class="cb">
+        <div class="f"><div class="fl">Objetivo</div><div class="fb m"></div></div>
+        <div class="f"><div class="fl">Atividades</div><div class="fb l"></div></div>
+        <div class="f"><div class="fl">Materiais</div><div class="fb"></div></div>
+        <div class="f"><div class="fl">Tempo</div><div class="fb"></div></div>
+        <div class="f"><div class="fl">Ref. curricular</div><div class="fb"></div></div>
+      </div>
+    </div>
+
+    <!-- COL 2 -->
+    <div class="col">
+      <div class="ch">Depois da aula</div>
+      <div class="cb">
+        <div class="f"><div class="fl">Funcionou</div><div class="fb m"></div></div>
+        <div class="f"><div class="fl">Não funcionou</div><div class="fb m"></div></div>
+        <div class="f"><div class="fl">Adaptações na hora</div><div class="fb m"></div></div>
+        <div class="f"><div class="fl">Sinal de sala</div><div class="fb m"></div></div>
+        <div class="f">
+          <div class="fl">Autoavaliação</div>
+          <div class="rat">
+            <span class="rl">Repensar</span>
+            <span class="rc">1</span><span class="rc">2</span><span class="rc">3</span><span class="rc">4</span><span class="rc">5</span>
+            <span class="rl">Ótimo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COL 3 -->
+    <div class="col">
+      <div class="ch">Próxima versão</div>
+      <div class="cb">
+        <div class="f"><div class="fl">O que muda</div><div class="fb l"></div></div>
+        <div class="f"><div class="fl">Por que muda</div><div class="fb m"></div></div>
+        <div class="f">
+          <div class="fl">Tipo</div>
+          <div class="cks">
+            <div class="ck"><div class="bx"></div> X Reestr.</div>
+            <div class="ck"><div class="bx"></div> Y Ajuste</div>
+            <div class="ck"><div class="bx"></div> Z Micro</div>
+          </div>
+        </div>
+        <div class="f">
+          <div class="vr">
+            <span class="vl">De:</span><span class="vf"></span>
+            <span class="va">→</span>
+            <span class="vl">Para:</span><span class="vf"></span>
+          </div>
+        </div>
+        <div class="f">
+          <div class="fl">Evidência</div>
+          <div class="evr">
+            <span class="ec">E0</span><span class="ec">E1</span><span class="ec">E2</span><span class="ec">E3</span>
+          </div>
+        </div>
+        <div class="f">
+          <div class="cks">
+            <div class="ck"><div class="bx"></div> Mesmo contexto</div>
+            <div class="ck"><div class="bx"></div> VC: <span style="border-bottom:1px solid #000;min-width:30px;display:inline-block;">&nbsp;</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- HISTORY -->
+  <div class="hist">
+    <div class="ht">Histórico</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:7%;">Ver.</th>
+          <th style="width:9%;">Data</th>
+          <th style="width:34%;">O que mudou</th>
+          <th style="width:34%;">Por que (sinal de sala)</th>
+          <th style="width:8%;">Evid.</th>
+          <th style="width:8%;">Result.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="foot">
+    <span>PVP Canvas Mini · Protocolo de Versionamento Pedagógico</span>
+    <span>Leidison Lima dos Santos · CC BY 4.0 · 2026</span>
+  </div>
+</div>
+
+</body>
+</html>
